@@ -188,6 +188,23 @@ button{font-family:var(--sans);}
 .vposter .vp-lbl{color:#fff;font-size:14px;font-weight:600;background:rgba(18,16,15,.6);padding:7px 14px;border-radius:999px;}
 .t-text{font-size:16px;color:var(--crema);line-height:1.75;font-weight:400;}
 .t-info.sede-mode{padding-top:22px;}
+#term-screen .vwrap{width:100%;aspect-ratio:16/9;max-height:52vh;}
+/* Página de término: toda la pantalla se desplaza como una sola columna; la descripción se ve completa */
+#term-screen{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+#term-screen > *{flex-shrink:0;}
+#term-screen .t-info{flex:1 0 auto;overflow:visible;min-height:auto;padding:18px 24px 32px;}
+#term-screen .t-nav{position:sticky;bottom:0;z-index:5;background:var(--indigo);}
+@media (min-width:760px){
+  #term-screen .t-videos,#term-screen .t-info{width:100%;max-width:760px;margin-left:auto;margin-right:auto;}
+  #term-screen .vwrap{max-height:none;}
+  #term-screen .t-hero-txt,#term-screen .t-head{max-width:760px;}
+}
+@media (max-width:600px){
+  #term-screen .t-hero{height:32vh;min-height:210px;}
+  #term-screen .t-hero.sede-hero{height:36vh;}
+  .t-text{font-size:16.5px;line-height:1.6;}
+  #term-screen .t-info{padding:14px 22px 28px;}
+}
 </style>
 </head>
 <body>
@@ -773,7 +790,7 @@ function loadChain(img, list, onMode){
   img.onerror = function(){ i++; if(i < list.length){ onMode && onMode(list[i].mode, list[i].src); img.src = list[i].src; } else { img.style.display = 'none'; onMode && onMode('none'); } };
   onMode && onMode(list[0].mode, list[0].src); img.src = list[0].src;
 }
-function thumbChain(n){ return [{src:'imagenes/'+n+'.jpg'}, {src: EMB[n] && EMB[n].t}, {src: THUMBS[n]}]; }
+function thumbChain(n){ return [{src:'imagenes/mini/'+n+'.jpg'}, {src:'imagenes/'+n+'.jpg'}, {src: EMB[n] && EMB[n].t}, {src: THUMBS[n]}]; }
 
 /* ---------- MENÚ ---------- */
 (function buildMenu(){
@@ -821,6 +838,7 @@ function showIndex(){ stopVideos(); activate('index-screen'); }
 
 /* ---------- TÉRMINO / FICHA DE SEDE ---------- */
 function fillPage(o){
+  var ts=document.getElementById('term-screen'); if(ts) ts.scrollTop=0;
   document.getElementById('t-museo').textContent = o.eyebrow;
   const tt=document.getElementById('t-title'); tt.textContent = o.title; tt.classList.toggle('long', o.title.length > 22);
   document.getElementById('t-text').textContent = o.text;
@@ -869,7 +887,7 @@ function buildVideo(t){
   box.appendChild(tr);
   tipos.forEach(function(tp,i){
     const key = t.n+'-'+tp[0], ytid = ytId(YT_IDS[key]);
-    const vw = document.createElement('div'); vw.className = 'vwrap'; vw.id = 'vb-'+i; vw.style.height = '30vh'; vw.style.display = i===0 ? 'block' : 'none';
+    const vw = document.createElement('div'); vw.className = 'vwrap'; vw.id = 'vb-'+i; vw.style.display = i===0 ? 'block' : 'none';
     if(ytid && location.protocol === 'file:'){
       /* Archivo descargado: YouTube no permite reproducir dentro de la página, así que se muestra la miniatura y se abre en YouTube */
       const a = document.createElement('a'); a.className = 'vposter'; a.href = 'https://www.youtube.com/watch?v='+ytid; a.target = '_blank'; a.rel = 'noopener';
